@@ -11,8 +11,16 @@ module.exports = {
 			var favicon = path.join(process.cwd(), pathFile);
 			var gitbookFaviconPath = path.join(process.cwd(), '_book', 'gitbook', 'images', 'favicon.ico');
 			if (pathFile && fs.existsSync(pathFile) && fs.existsSync(gitbookFaviconPath)){
-				fs.unlinkSync(gitbookFaviconPath);
-				fs.createReadStream(favicon).pipe(fs.createWriteStream(gitbookFaviconPath));
+
+                /**
+                 * pipe() is an async method, it will be failed to write file 
+                 * under the gitbook's hook context, we resort to sync methods.
+                 */
+				// fs.unlinkSync(gitbookFaviconPath);
+				// fs.createReadStream(favicon).pipe(fs.createWriteStream(gitbookFaviconPath));
+                
+                var data = fs.readFileSync( favicon );
+                fs.writeFileSync( gitbookFaviconPath, data );
 			}
 		}
 	},
